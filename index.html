@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CommandMonkey - Master keyboard shortcuts with a MonkeyType-inspired typing trainer. Practice cursor navigation, word deletion, and text selection shortcuts.">
+    <meta name="theme-color" content="#323437">
+    <title>CommandMonkey - Keyboard Shortcut Trainer</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">&gt;_</span>
+                <span class="logo-text">CommandMonkey</span>
+            </div>
+            <button class="btn btn-secondary" id="themeToggle" aria-label="Toggle theme">
+                <span class="theme-icon">Dark</span>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Bar -->
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-value primary" id="cpmDisplay">0</span>
+                    <span class="stat-label">CPM</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="accuracyDisplay">100%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="timeDisplay">30</span>
+                    <span class="stat-label">Time</span>
+                </div>
+            </div>
+
+            <!-- Timer Mode Selector -->
+            <div class="timer-controls">
+                <button class="timer-btn" data-time="15">15</button>
+                <button class="timer-btn active" data-time="30">30</button>
+                <button class="timer-btn" data-time="60">60</button>
+                <span class="text-muted" style="margin-left: 0.5rem;">seconds</span>
+            </div>
+
+            <!-- Instruction Area -->
+            <div class="instruction-area">
+                <div class="command-name" id="commandInstruction">Delete the word 'hello'</div>
+                <div class="key-hint" id="keyHint">
+                    <span class="key modifier">Option</span>
+                    <span class="key-separator">+</span>
+                    <span class="key">Delete</span>
+                </div>
+            </div>
+
+            <!-- Terminal Container -->
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">terminal</span>
+                </div>
+                <div class="terminal-content">
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">$</span>
+                        <div class="terminal-text" id="terminalArea" tabindex="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-message text-center text-muted" id="statusMessage">
+                Press any shortcut to start
+            </div>
+        </main>
+
+        <!-- Footer Hints -->
+        <footer class="footer">
+            <div class="footer-text">
+                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Tab</span>
+                +
+                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Enter</span>
+                to restart
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Esc</span>
+                to reset
+            </div>
+        </footer>
+    </div>
+
+    <!-- Results Modal -->
+    <div class="modal-overlay" id="resultsModal" hidden>
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Results</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close results">&times;</button>
+            </div>
+            <div class="results-grid">
+                <div class="result-item featured">
+                    <span class="result-value" id="resultCpm">0</span>
+                    <span class="result-label">Commands Per Minute</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-value" id="resultAccuracy">100%</span>
+                    <span class="result-label">Accuracy</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-value" id="resultCommands">0</span>
+                    <span class="result-label">Commands</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-value text-success" id="resultCorrect">0</span>
+                    <span class="result-label">Correct</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-value text-error" id="resultWrong">0</span>
+                    <span class="result-label">Wrong</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-value" id="resultTime">30s</span>
+                    <span class="result-label">Duration</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="restartBtn">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
