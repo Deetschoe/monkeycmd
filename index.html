@@ -17,17 +17,165 @@
                 <span class="logo-icon">&gt;_</span>
                 <span class="logo-text">CommandMonkey</span>
             </div>
-            <button class="btn btn-secondary" id="themeToggle" aria-label="Toggle theme">
-                <span class="theme-icon">Dark</span>
-            </button>
+            <div class="header-controls">
+                <div class="os-selector" role="radiogroup" aria-label="Select operating system">
+                    <button class="os-btn active" data-os="mac" aria-label="Mac shortcuts" data-tooltip="Mac shortcuts">
+                        <img src="mac.svg" alt="Mac" class="os-icon" width="20" height="20">
+                    </button>
+                    <button class="os-btn" data-os="windows" aria-label="Windows shortcuts" data-tooltip="Windows shortcuts">
+                        <img src="windows.svg" alt="Windows" class="os-icon" width="20" height="20">
+                    </button>
+                    <button class="os-btn" data-os="linux" aria-label="Linux shortcuts" data-tooltip="Linux shortcuts">
+                        <img src="linux.svg" alt="Linux" class="os-icon" width="20" height="20">
+                    </button>
+                </div>
+                <div class="theme-picker-wrapper">
+                    <button class="btn btn-secondary theme-trigger" id="themeToggle" aria-label="Choose theme" aria-expanded="false" aria-haspopup="true" data-tooltip="Change color theme">
+                        <span class="theme-icon">Dark</span>
+                        <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 1l4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <div class="theme-dropdown" id="themeDropdown" role="menu" aria-label="Theme selection">
+                        <button class="theme-option active" data-theme="default" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #323437;"></span>
+                                <span class="color-swatch accent" style="background: #e2b714;"></span>
+                            </div>
+                            <span class="theme-name">Dark</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="dracula" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #282a36;"></span>
+                                <span class="color-swatch accent" style="background: #bd93f9;"></span>
+                            </div>
+                            <span class="theme-name">Dracula</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="nord" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #2e3440;"></span>
+                                <span class="color-swatch accent" style="background: #88c0d0;"></span>
+                            </div>
+                            <span class="theme-name">Nord</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="matrix" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #0d0d0d;"></span>
+                                <span class="color-swatch accent" style="background: #00ff00;"></span>
+                            </div>
+                            <span class="theme-name">Matrix</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="solarized-light" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #fdf6e3;"></span>
+                                <span class="color-swatch accent" style="background: #cb4b16;"></span>
+                            </div>
+                            <span class="theme-name">Solarized Light</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="solarized-dark" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #002b36;"></span>
+                                <span class="color-swatch accent" style="background: #268bd2;"></span>
+                            </div>
+                            <span class="theme-name">Solarized Dark</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="monokai" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #272822;"></span>
+                                <span class="color-swatch accent" style="background: #f92672;"></span>
+                            </div>
+                            <span class="theme-name">Monokai</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="gruvbox" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #282828;"></span>
+                                <span class="color-swatch accent" style="background: #fe8019;"></span>
+                            </div>
+                            <span class="theme-name">Gruvbox</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="one-dark" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #282c34;"></span>
+                                <span class="color-swatch accent" style="background: #61afef;"></span>
+                            </div>
+                            <span class="theme-name">One Dark</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="tokyo-night" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #1a1b26;"></span>
+                                <span class="color-swatch accent" style="background: #bb9af7;"></span>
+                            </div>
+                            <span class="theme-name">Tokyo Night</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="catppuccin" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #1e1e2e;"></span>
+                                <span class="color-swatch accent" style="background: #cba6f7;"></span>
+                            </div>
+                            <span class="theme-name">Catppuccin</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="rose-pine" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #191724;"></span>
+                                <span class="color-swatch accent" style="background: #ebbcba;"></span>
+                            </div>
+                            <span class="theme-name">Rose Pine</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="synthwave" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #2b213a;"></span>
+                                <span class="color-swatch accent" style="background: #ff7edb;"></span>
+                            </div>
+                            <span class="theme-name">Synthwave</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="ocean" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #0a1929;"></span>
+                                <span class="color-swatch accent" style="background: #00bcd4;"></span>
+                            </div>
+                            <span class="theme-name">Ocean</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="forest" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #1a2417;"></span>
+                                <span class="color-swatch accent" style="background: #8fbc8f;"></span>
+                            </div>
+                            <span class="theme-name">Forest</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                        <button class="theme-option" data-theme="sunset" role="menuitem">
+                            <div class="theme-preview">
+                                <span class="color-swatch" style="background: #2d1f31;"></span>
+                                <span class="color-swatch accent" style="background: #ff6b35;"></span>
+                            </div>
+                            <span class="theme-name">Sunset</span>
+                            <span class="theme-check">&#10003;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Stats Bar -->
-            <div class="stats-container">
+            <!-- Compact Stats Bar with Timer Controls -->
+            <div class="stats-container compact">
                 <div class="stat-item">
-                    <span class="stat-value primary" id="cpmDisplay">0</span>
+                    <span class="stat-value" id="cpmDisplay">0</span>
                     <span class="stat-label">CPM</span>
                 </div>
                 <div class="stat-item">
@@ -38,33 +186,48 @@
                     <span class="stat-value" id="timeDisplay">30</span>
                     <span class="stat-label">Time</span>
                 </div>
-            </div>
-
-            <!-- Timer Mode Selector -->
-            <div class="timer-controls">
-                <button class="timer-btn" data-time="15">15</button>
-                <button class="timer-btn active" data-time="30">30</button>
-                <button class="timer-btn" data-time="60">60</button>
-                <span class="text-muted" style="margin-left: 0.5rem;">seconds</span>
-            </div>
-
-            <!-- Instruction Area -->
-            <div class="instruction-area">
-                <div class="command-name" id="commandInstruction">Delete the word 'hello'</div>
-                <div class="key-hint" id="keyHint">
-                    <span class="key modifier">Option</span>
-                    <span class="key-separator">+</span>
-                    <span class="key">Delete</span>
+                <div class="stat-item best-score-container" id="bestScoreContainer">
+                    <span class="stat-value best-value" id="bestCpmDisplay">-</span>
+                    <span class="stat-label">Best</span>
+                    <span class="new-best-badge" id="newBestBadge">NEW!</span>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn" data-time="15" data-tooltip="15 second session">15</button>
+                    <button class="timer-btn active" data-time="30" data-tooltip="30 second session">30</button>
+                    <button class="timer-btn" data-time="60" data-tooltip="60 second session">60</button>
                 </div>
             </div>
 
-            <!-- Terminal Container -->
-            <div class="terminal-container">
+            <!-- Category Selector -->
+            <div class="category-controls" id="categoryControls">
+                <button class="category-btn active" data-category="all" data-tooltip="Practice all keyboard shortcuts">
+                    <span class="category-name">All Commands</span>
+                </button>
+                <button class="category-btn" data-category="navigation" data-tooltip="Move faster through text">
+                    <span class="category-name">Navigation</span>
+                </button>
+                <button class="category-btn" data-category="selection" data-tooltip="Select text like a pro">
+                    <span class="category-name">Selection</span>
+                </button>
+                <button class="category-btn" data-category="deletion" data-tooltip="Delete with precision">
+                    <span class="category-name">Deletion</span>
+                </button>
+            </div>
+
+            <!-- Terminal Container (Main Focus) -->
+            <div class="terminal-container" id="terminalContainer">
+                <div class="terminal-focus-glow"></div>
                 <div class="terminal-header">
                     <span class="terminal-dot red"></span>
                     <span class="terminal-dot yellow"></span>
                     <span class="terminal-dot green"></span>
                     <span class="terminal-title">terminal</span>
+                </div>
+                <!-- Instruction Overlay -->
+                <div class="instruction-overlay" id="instructionOverlay">
+                    <span class="instruction-text" id="commandInstruction">Delete the word 'hello'</span>
+                    <span class="instruction-arrow">→</span>
+                    <span class="instruction-keys blurred" id="keyHint" tabindex="0" role="button" aria-label="Click to reveal shortcut">Option + Delete</span>
                 </div>
                 <div class="terminal-content">
                     <div class="terminal-line">
@@ -72,24 +235,87 @@
                         <div class="terminal-text" id="terminalArea" tabindex="0"></div>
                     </div>
                 </div>
+                <button class="replay-btn" id="replayBtn" aria-label="Restart" data-tooltip="Restart (Tab+Enter)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 4v6h6"></path>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                </button>
             </div>
 
             <!-- Status Message -->
             <div class="status-message text-center text-muted" id="statusMessage">
                 Press any shortcut to start
             </div>
+
+            <!-- Inline Results Screen (MonkeyType-style) -->
+            <div class="results-screen" id="resultsScreen" hidden>
+                <div class="results-main">
+                    <div class="results-left">
+                        <div class="result-big">
+                            <span class="result-label">cpm</span>
+                            <span class="result-value" id="resultCpmInline">0</span>
+                        </div>
+                        <div class="result-big">
+                            <span class="result-label">acc</span>
+                            <span class="result-value" id="resultAccInline">100%</span>
+                        </div>
+                    </div>
+                    <div class="results-right">
+                        <div class="results-stats">
+                            <div class="stat-group">
+                                <span class="stat-label">test type</span>
+                                <span class="stat-value" id="resultTestType">time 30<br>all commands</span>
+                            </div>
+                            <div class="stat-group">
+                                <span class="stat-label">raw</span>
+                                <span class="stat-value" id="resultRaw">0</span>
+                            </div>
+                            <div class="stat-group">
+                                <span class="stat-label">commands</span>
+                                <span class="stat-value" id="resultCommandsInline">0/0</span>
+                            </div>
+                            <div class="stat-group">
+                                <span class="stat-label">time</span>
+                                <span class="stat-value" id="resultTimeInline">30s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-pb" id="resultsPb" hidden>
+                    <span class="pb-text">new personal best!</span>
+                </div>
+                <div class="results-actions">
+                    <button class="action-btn" id="nextTestBtn" aria-label="Next test" title="Next test">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
+                    </button>
+                    <button class="action-btn" id="replayBtnInline" aria-label="Restart test" title="Restart test">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </main>
 
         <!-- Footer Hints -->
         <footer class="footer">
-            <div class="footer-text">
-                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Tab</span>
-                +
-                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Enter</span>
-                to restart
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                <span class="key" style="font-size: 0.7rem; min-width: auto; height: auto; padding: 0.2rem 0.4rem;">Esc</span>
-                to reset
+            <div class="keyboard-shortcuts-hint">
+                <div class="shortcut-item" data-tooltip="Restart the current session">
+                    <span class="key key-small">Tab</span>
+                    <span class="key-plus">+</span>
+                    <span class="key key-small">Enter</span>
+                    <span class="shortcut-label">restart</span>
+                </div>
+                <div class="shortcut-divider"></div>
+                <div class="shortcut-item" data-tooltip="Reset and go back to start">
+                    <span class="key key-small">Esc</span>
+                    <span class="shortcut-label">reset</span>
+                </div>
             </div>
         </footer>
     </div>
@@ -105,6 +331,9 @@
                 <div class="result-item featured">
                     <span class="result-value" id="resultCpm">0</span>
                     <span class="result-label">Commands Per Minute</span>
+                    <div class="personal-best-indicator" id="personalBestIndicator">
+                        <span class="pb-badge">NEW PERSONAL BEST!</span>
+                    </div>
                 </div>
                 <div class="result-item">
                     <span class="result-value" id="resultAccuracy">100%</span>

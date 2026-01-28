@@ -1,7 +1,25 @@
 /**
  * Terminal Text Editor Simulator
  * A text input simulation with cursor, selection, and keyboard shortcut handling
+ * Supports macOS, Windows, and Linux keyboard shortcuts
  */
+
+/**
+ * Detect the current operating system
+ * @returns {'mac' | 'windows' | 'linux'} The detected OS
+ */
+function detectOS() {
+    const platform = navigator.platform.toLowerCase();
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (platform.includes('mac') || userAgent.includes('mac')) {
+        return 'mac';
+    } else if (platform.includes('win') || userAgent.includes('win')) {
+        return 'windows';
+    } else {
+        return 'linux';
+    }
+}
 
 export class TerminalEditor {
     constructor(containerElement) {
@@ -13,6 +31,7 @@ export class TerminalEditor {
         this.text = '';
         this.cursorPosition = 0;
         this.selection = null; // { start: number, end: number } or null
+        this.os = detectOS(); // Detect OS for proper shortcut handling
 
         this._setupDOM();
         this._setupEventListeners();
@@ -64,29 +83,41 @@ export class TerminalEditor {
 
     /**
      * Handle keydown events
+     * Supports both Mac and Windows/Linux keyboard shortcuts
      */
     _handleKeyDown(e) {
         const { key, metaKey, altKey, ctrlKey, shiftKey } = e;
+        const isMac = this.os === 'mac';
+        const isWindows = this.os === 'windows';
+        const isLinux = this.os === 'linux';
 
         // Determine if we should handle this key combination
         let handled = false;
 
         // Navigation keys
         if (key === 'ArrowLeft') {
-            if (metaKey && shiftKey) {
-                // Command + Shift + Left: Select to line start
+            if (isMac && metaKey && shiftKey) {
+                // Mac: Command + Shift + Left: Select to line start
                 this.selectToLineStart();
                 handled = true;
-            } else if (metaKey) {
-                // Command + Left: Move to line start
+            } else if (isMac && metaKey) {
+                // Mac: Command + Left: Move to line start
                 this.moveToLineStart();
                 handled = true;
-            } else if (altKey && shiftKey) {
-                // Option + Shift + Left: Select by word
+            } else if (isMac && altKey && shiftKey) {
+                // Mac: Option + Shift + Left: Select by word
                 this.selectByWord('left');
                 handled = true;
-            } else if (altKey) {
-                // Option + Left: Move by word
+            } else if (isMac && altKey) {
+                // Mac: Option + Left: Move by word
+                this.moveByWord('left');
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey && shiftKey) {
+                // Windows/Linux: Ctrl + Shift + Left: Select by word
+                this.selectByWord('left');
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey) {
+                // Windows/Linux: Ctrl + Left: Move by word
                 this.moveByWord('left');
                 handled = true;
             } else if (shiftKey) {
@@ -99,20 +130,28 @@ export class TerminalEditor {
                 handled = true;
             }
         } else if (key === 'ArrowRight') {
-            if (metaKey && shiftKey) {
-                // Command + Shift + Right: Select to line end
+            if (isMac && metaKey && shiftKey) {
+                // Mac: Command + Shift + Right: Select to line end
                 this.selectToLineEnd();
                 handled = true;
-            } else if (metaKey) {
-                // Command + Right: Move to line end
+            } else if (isMac && metaKey) {
+                // Mac: Command + Right: Move to line end
                 this.moveToLineEnd();
                 handled = true;
-            } else if (altKey && shiftKey) {
-                // Option + Shift + Right: Select by word
+            } else if (isMac && altKey && shiftKey) {
+                // Mac: Option + Shift + Right: Select by word
                 this.selectByWord('right');
                 handled = true;
-            } else if (altKey) {
-                // Option + Right: Move by word
+            } else if (isMac && altKey) {
+                // Mac: Option + Right: Move by word
+                this.moveByWord('right');
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey && shiftKey) {
+                // Windows/Linux: Ctrl + Shift + Right: Select by word
+                this.selectByWord('right');
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey) {
+                // Windows/Linux: Ctrl + Right: Move by word
                 this.moveByWord('right');
                 handled = true;
             } else if (shiftKey) {
@@ -124,18 +163,44 @@ export class TerminalEditor {
                 this._moveCursorRight();
                 handled = true;
             }
-        } else if (key === 'Backspace' || key === 'Delete') {
-            if (metaKey) {
-                // Command + Delete: Delete to line start
+        } else if (key === 'Backspace') {
+            if (isMac && metaKey) {
+                // Mac: Command + Backspace: Delete to line start
                 this.deleteToLineStart();
                 handled = true;
-            } else if (altKey) {
-                // Option + Delete: Delete word
+            } else if ((isWindows || isLinux) && ctrlKey && shiftKey) {
+                // Windows/Linux: Ctrl + Shift + Backspace: Delete to line start
+                this.deleteToLineStart();
+                handled = true;
+            } else if (isMac && altKey) {
+                // Mac: Option + Backspace: Delete word backward
+                this.deleteWord();
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey) {
+                // Windows/Linux: Ctrl + Backspace: Delete word backward
                 this.deleteWord();
                 handled = true;
             } else {
+                // Regular backspace
+                this._deleteCharacter('backward');
+                handled = true;
+            }
+        } else if (key === 'Delete') {
+            if ((isWindows || isLinux) && ctrlKey && shiftKey) {
+                // Windows/Linux: Ctrl + Shift + Delete: Delete to line end
+                this.deleteToLineEnd();
+                handled = true;
+            } else if (isMac && altKey) {
+                // Mac: Option + Delete (Fn+Backspace): Delete word forward
+                this.deleteWordForward();
+                handled = true;
+            } else if ((isWindows || isLinux) && ctrlKey) {
+                // Windows/Linux: Ctrl + Delete: Delete word forward
+                this.deleteWordForward();
+                handled = true;
+            } else {
                 // Regular delete
-                this._deleteCharacter(key === 'Delete' ? 'forward' : 'backward');
+                this._deleteCharacter('forward');
                 handled = true;
             }
         } else if (key === 'Home') {
@@ -160,20 +225,62 @@ export class TerminalEditor {
             this._insertCharacter('\n');
             handled = true;
         } else if (ctrlKey && key.toLowerCase() === 'a') {
-            // Control + A: Move to line start (terminal/Emacs style)
-            this.moveToLineStart();
-            handled = true;
+            if (isMac || isLinux) {
+                // Mac/Linux: Control + A: Move to line start (terminal/Emacs style)
+                this.moveToLineStart();
+                handled = true;
+            } else if (isWindows) {
+                // Windows: Ctrl + A: Select all
+                this.selectAll();
+                handled = true;
+            }
         } else if (ctrlKey && key.toLowerCase() === 'e') {
-            // Control + E: Move to line end (terminal/Emacs style)
-            this.moveToLineEnd();
-            handled = true;
+            // Control + E: Move to line end (terminal/Emacs style) - Mac/Linux only
+            if (isMac || isLinux) {
+                this.moveToLineEnd();
+                handled = true;
+            }
         } else if (ctrlKey && key.toLowerCase() === 'w') {
-            // Control + W: Delete previous word (terminal style)
+            // Control + W: Delete previous word (terminal style) - all platforms
             this.deleteWord();
             handled = true;
         } else if (ctrlKey && key.toLowerCase() === 'd') {
             // Control + D: Forward delete (terminal style)
-            this._deleteCharacter('forward');
+            if (isMac || isLinux) {
+                this._deleteCharacter('forward');
+                handled = true;
+            }
+        } else if (ctrlKey && key.toLowerCase() === 'f') {
+            // Control + F: Move forward one character (terminal/Emacs style) - Mac/Linux only
+            if (isMac || isLinux) {
+                this._moveCursorRight();
+                handled = true;
+            }
+        } else if (ctrlKey && key.toLowerCase() === 'b') {
+            // Control + B: Move backward one character (terminal/Emacs style) - Mac/Linux only
+            if (isMac || isLinux) {
+                this._moveCursorLeft();
+                handled = true;
+            }
+        } else if (ctrlKey && key.toLowerCase() === 'k') {
+            // Control + K: Kill to end of line (terminal/Emacs style) - all platforms
+            this.deleteToLineEnd();
+            handled = true;
+        } else if (ctrlKey && key.toLowerCase() === 'u') {
+            // Control + U: Kill to start of line (terminal style) - all platforms
+            this.deleteToLineStart();
+            handled = true;
+        } else if (isMac && metaKey && key.toLowerCase() === 'a') {
+            // Mac: Command + A: Select all
+            this.selectAll();
+            handled = true;
+        } else if ((isLinux) && altKey && key.toLowerCase() === 'd') {
+            // Linux: Alt + D: Delete word forward (bash style)
+            this.deleteWordForward();
+            handled = true;
+        } else if (isLinux && altKey && key === 'Backspace') {
+            // Linux: Alt + Backspace: Delete word backward
+            this.deleteWord();
             handled = true;
         }
 
@@ -300,6 +407,51 @@ export class TerminalEditor {
             const lineStart = this._findLineStart(this.cursorPosition);
             this.text = this.text.slice(0, lineStart) + this.text.slice(this.cursorPosition);
             this.cursorPosition = lineStart;
+        }
+        this.render();
+    }
+
+    /**
+     * Delete from cursor to line end
+     */
+    deleteToLineEnd() {
+        if (this.selection) {
+            this._deleteSelection();
+        } else {
+            const lineEnd = this._findLineEnd(this.cursorPosition);
+            this.text = this.text.slice(0, this.cursorPosition) + this.text.slice(lineEnd);
+            // Cursor stays at current position
+        }
+        this.render();
+    }
+
+    /**
+     * Delete word after cursor (forward word delete)
+     */
+    deleteWordForward() {
+        if (this.selection) {
+            this._deleteSelection();
+        } else {
+            const wordEnd = this._findWordBoundary(this.cursorPosition, 'right');
+            this.text = this.text.slice(0, this.cursorPosition) + this.text.slice(wordEnd);
+            // Cursor stays at current position
+        }
+        this.render();
+    }
+
+    /**
+     * Select all text
+     */
+    selectAll() {
+        if (this.text.length === 0) {
+            this.selection = null;
+        } else {
+            this.selection = {
+                start: 0,
+                end: this.text.length,
+                anchor: 0
+            };
+            this.cursorPosition = this.text.length;
         }
         this.render();
     }
@@ -465,27 +617,43 @@ export class TerminalEditor {
         this.container.blur();
     }
 
+    /**
+     * Get the current OS setting
+     * @returns {'mac' | 'windows' | 'linux'} Current OS
+     */
+    getOS() {
+        return this.os;
+    }
+
+    /**
+     * Set the OS for keyboard shortcuts (useful for testing)
+     * @param {'mac' | 'windows' | 'linux'} os - The OS to use
+     */
+    setOS(os) {
+        if (['mac', 'windows', 'linux'].includes(os)) {
+            this.os = os;
+        }
+    }
+
     // ========== Private Helper Methods ==========
 
     /**
      * Find word boundary in given direction
+     * Uses whitespace-based word boundaries to match standard text editor behavior
      */
     _findWordBoundary(position, direction) {
-        const wordChars = /[a-zA-Z0-9_]/;
-        const nonWordChars = /[^a-zA-Z0-9_]/;
-
         if (direction === 'left') {
             if (position === 0) return 0;
 
             let pos = position - 1;
 
-            // Skip non-word characters
-            while (pos > 0 && nonWordChars.test(this.text[pos])) {
+            // Skip any whitespace first
+            while (pos > 0 && /\s/.test(this.text[pos])) {
                 pos--;
             }
 
-            // Skip word characters
-            while (pos > 0 && wordChars.test(this.text[pos - 1])) {
+            // Then find the start of the word (go back until whitespace or start)
+            while (pos > 0 && /\S/.test(this.text[pos - 1])) {
                 pos--;
             }
 
@@ -495,13 +663,13 @@ export class TerminalEditor {
 
             let pos = position;
 
-            // Skip word characters
-            while (pos < this.text.length && wordChars.test(this.text[pos])) {
+            // Skip current word characters first (non-whitespace)
+            while (pos < this.text.length && /\S/.test(this.text[pos])) {
                 pos++;
             }
 
-            // Skip non-word characters
-            while (pos < this.text.length && nonWordChars.test(this.text[pos])) {
+            // Then skip any whitespace
+            while (pos < this.text.length && /\s/.test(this.text[pos])) {
                 pos++;
             }
 
