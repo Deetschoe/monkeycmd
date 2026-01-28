@@ -1114,26 +1114,6 @@ function applyOS(os) {
 
     // Update app state
     app.currentOS = os;
-
-    // Update logo icon for the selected OS
-    updateLogoForOS(os);
-}
-
-/**
- * Update logo icon based on selected OS
- */
-function updateLogoForOS(os) {
-    const logoIcon = document.querySelector('.logo-icon');
-    if (!logoIcon) return;
-
-    // Update logo with OS-specific icon and terminal symbol
-    if (os === 'mac') {
-        logoIcon.innerHTML = '<img src="mac.svg" class="logo-os-icon" alt="Mac">_';
-    } else if (os === 'windows') {
-        logoIcon.innerHTML = '<img src="windows.svg" class="logo-os-icon" alt="Windows">_';
-    } else if (os === 'linux') {
-        logoIcon.innerHTML = '<img src="linux.svg" class="logo-os-icon" alt="Linux">_';
-    }
 }
 
 /**

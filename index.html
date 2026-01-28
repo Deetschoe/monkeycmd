@@ -18,6 +18,17 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="preload" data-hints="off">
+    <!-- Mobile Notice Banner -->
+    <div class="mobile-notice" id="mobileNotice">
+        <div class="mobile-notice-content">
+            <span class="mobile-notice-icon">&#9000;</span>
+            <div class="mobile-notice-text">
+                <strong>Hey there!</strong> monkeycmd is designed for desktop keyboards with Option, Command, and Control keys. Feel free to browse the shortcuts here, but for real practice, switch to a computer with a physical keyboard.
+            </div>
+            <button class="mobile-notice-close" id="mobileNoticeClose" aria-label="Dismiss notice">&times;</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <header class="header">
@@ -281,7 +292,7 @@
 
             <!-- Mobile Shortcut Keyboard -->
             <div class="mobile-keyboard" id="mobileKeyboard">
-                <div class="mobile-keyboard-title">tap to execute shortcut</div>
+                <div class="mobile-keyboard-title">keyboard shortcuts reference</div>
 
                 <!-- Navigation Section -->
                 <div class="mobile-keyboard-section" data-section="navigation">
@@ -418,5 +429,28 @@
 
     <!-- Scripts -->
     <script type="module" src="js/main.js"></script>
+
+    <!-- Mobile Notice Script -->
+    <script>
+        (function() {
+            const notice = document.getElementById('mobileNotice');
+            const closeBtn = document.getElementById('mobileNoticeClose');
+            const storageKey = 'monkeycmd-mobile-notice-dismissed';
+
+            // Check if notice was previously dismissed
+            if (localStorage.getItem(storageKey) === 'true') {
+                notice.style.display = 'none';
+            }
+
+            // Handle close button click
+            closeBtn.addEventListener('click', function() {
+                notice.classList.add('mobile-notice-hiding');
+                setTimeout(function() {
+                    notice.style.display = 'none';
+                    localStorage.setItem(storageKey, 'true');
+                }, 300);
+            });
+        })();
+    </script>
 </body>
 </html>

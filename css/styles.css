@@ -1068,11 +1068,16 @@ body.preload *::after {
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   /* opacity controlled by MonkeyType-style section */
 }
 
-.timer-btn:hover {
-  color: var(--text-primary);
+/* Only apply hover color change on devices that support hover */
+@media (hover: hover) {
+  .timer-btn:hover {
+    color: var(--text-primary);
+  }
 }
 
 .timer-btn.active {
@@ -1081,8 +1086,11 @@ body.preload *::after {
   border-color: transparent;
 }
 
-.timer-btn.active:hover {
-  background: var(--bg-tertiary);
+/* Only apply active hover state on devices that support hover */
+@media (hover: hover) {
+  .timer-btn.active:hover {
+    background: var(--bg-tertiary);
+  }
 }
 
 /* ============================================
@@ -1199,15 +1207,18 @@ body.preload *::after {
   z-index: 101;
 }
 
-.category-btn[data-tooltip]:hover::after,
-.category-btn[data-tooltip]:hover::before {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
+/* Only show category tooltips on devices that support hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  .category-btn[data-tooltip]:hover::after,
+  .category-btn[data-tooltip]:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
 
-.category-btn[data-tooltip]:hover::before {
-  transform: translateX(-50%);
+  .category-btn[data-tooltip]:hover::before {
+    transform: translateX(-50%);
+  }
 }
 
 /* ============================================
@@ -2655,24 +2666,26 @@ body.preload *::after {
   height: 16px;
 }
 
-/* Tooltip for replay button */
-.replay-btn[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + var(--spacing-sm));
-  left: 50%;
-  transform: translateX(-50%);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.7rem;
-  font-family: var(--font-main);
-  white-space: nowrap;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 12px var(--shadow);
-  z-index: 100;
-  pointer-events: none;
+/* Tooltip for replay button - only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .replay-btn[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + var(--spacing-sm));
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+    font-family: var(--font-main);
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px var(--shadow);
+    z-index: 100;
+    pointer-events: none;
+  }
 }
 
 /* ============================================
@@ -2963,26 +2976,52 @@ body,
 .category-tab,
 .theme-btn {
   position: relative;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    transform 200ms ease,
     box-shadow 200ms ease,
     background-color 200ms ease,
     border-color 200ms ease,
     color 200ms ease;
 }
 
-.btn:hover,
-.timer-btn:hover,
-.category-tab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
+/* Only apply transform transitions and hover effects on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .btn,
+  .timer-btn,
+  .category-tab,
+  .theme-btn {
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease,
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+
+  .btn:hover,
+  .timer-btn:hover,
+  .category-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+
+  .btn:active,
+  .timer-btn:active,
+  .category-tab:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px var(--shadow);
+  }
 }
 
-.btn:active,
-.timer-btn:active,
-.category-tab:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px var(--shadow);
+/* Touch device active states - instant, no transform */
+@media (hover: none), (pointer: coarse) {
+  .btn:active,
+  .timer-btn:active,
+  .category-tab:active {
+    opacity: 0.8;
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 .btn-primary:hover {
@@ -3668,11 +3707,14 @@ body,
   border-top-color: var(--bg-tertiary);
 }
 
-[data-tooltip]:hover::before,
-[data-tooltip]:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
+/* Only show tooltips on devices that support hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  [data-tooltip]:hover::before,
+  [data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* ============================================
@@ -4764,5 +4806,726 @@ html body .instruction-keys.hints-hidden:not(.revealed) {
     .result-main:nth-child(2) .result-number,
     .result-main:nth-child(3) .result-number {
         font-size: 2rem;
+    }
+}
+
+/* ============================================
+   Mobile Notice Banner
+   ============================================ */
+
+/* Hidden by default on desktop */
+.mobile-notice {
+    display: none;
+}
+
+/* Show only on mobile devices (touch devices or narrow screens) */
+@media (max-width: 768px), (pointer: coarse) and (max-width: 1024px) {
+    .mobile-notice {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--accent-primary);
+        padding: var(--spacing-md);
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .mobile-notice-hiding {
+        animation: slideUp 0.3s ease-in forwards;
+    }
+
+    .mobile-notice-content {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .mobile-notice-icon {
+        font-size: 1.5rem;
+        color: var(--accent-primary);
+        flex-shrink: 0;
+        line-height: 1;
+        margin-top: 2px;
+    }
+
+    .mobile-notice-text {
+        flex: 1;
+        font-family: var(--font-main);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--text-primary);
+    }
+
+    .mobile-notice-text strong {
+        color: var(--accent-primary);
+        font-weight: 600;
+    }
+
+    .mobile-notice-close {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        line-height: 1;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: color var(--transition-fast);
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        margin: -8px; /* Negative margin to expand touch area without affecting layout */
+    }
+
+    .mobile-notice-close:hover,
+    .mobile-notice-close:focus {
+        color: var(--text-primary);
+        background: var(--bg-tertiary);
+    }
+
+    /* Adjust app container to account for notice */
+    body:has(.mobile-notice:not([style*="display: none"])) .app-container {
+        padding-top: calc(var(--spacing-xl) + 60px);
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+    }
+}
+
+/* Extra small screens - more compact notice */
+@media (max-width: 400px) {
+    .mobile-notice {
+        padding: var(--spacing-sm);
+    }
+
+    .mobile-notice-text {
+        font-size: 0.8125rem;
+    }
+
+    .mobile-notice-icon {
+        font-size: 1.25rem;
+    }
+}
+
+/* ============================================
+   Enhanced Mobile UI/UX Improvements
+   ============================================ */
+
+/*
+ * Core improvements:
+ * 1. Proper touch targets (44px minimum)
+ * 2. Better overflow handling for small screens
+ * 3. Improved typography for readability
+ * 4. Smoother touch interactions (no janky animations)
+ * 5. Educational mobile keyboard (since shortcuts can't be practiced on mobile)
+ */
+
+/* ---- Touch Device Optimizations ---- */
+@media (pointer: coarse) {
+    /* Remove hover-dependent interactions that feel janky on touch */
+    .settings-wrapper:hover .settings-dropdown {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* Settings dropdown opens on tap only */
+    .settings-dropdown.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Disable transform animations on touch - they cause jank */
+    .shortcut-key:active {
+        transform: none;
+    }
+
+    /* Ensure all interactive elements have proper touch targets */
+    .timer-btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .os-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .replay-btn {
+        min-width: 48px;
+        min-height: 48px;
+        padding: var(--spacing-md);
+    }
+
+    /* Larger tap targets for toggles */
+    .setting-item {
+        min-height: 48px;
+    }
+
+    .toggle-slider {
+        min-width: 44px;
+        min-height: 26px;
+    }
+
+    /* Remove hover effects that don't work well on touch */
+    .shortcut-key:hover {
+        background: var(--bg-tertiary);
+        border-color: var(--border);
+    }
+
+    /* Active states for touch feedback */
+    .shortcut-key:active {
+        background: var(--accent-primary);
+        color: var(--bg-primary);
+        border-color: var(--accent-primary);
+    }
+
+    .timer-btn:active,
+    .os-btn:active {
+        opacity: 0.7;
+    }
+}
+
+/* ---- Small Screen Layout Fixes (320px-428px) ---- */
+@media (max-width: 428px) {
+    /* Prevent horizontal overflow */
+    html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+    }
+
+    .app-container {
+        padding: var(--spacing-sm);
+        overflow-x: hidden;
+    }
+
+    /* Header controls - ensure no overflow */
+    .header {
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .header-controls {
+        gap: var(--spacing-xs);
+        max-width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* OS selector - compact but touchable */
+    .os-selector {
+        padding: 3px;
+        gap: 2px;
+    }
+
+    .os-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .os-btn .os-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Theme trigger - ensure readable text */
+    .theme-trigger {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        min-height: 44px;
+    }
+
+    .theme-trigger .theme-icon {
+        font-size: 0.8rem;
+    }
+
+    /* Settings trigger */
+    .settings-trigger {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Stats container - compact but readable */
+    .stats-container {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-xs);
+    }
+
+    .stats-container.compact .stat-item {
+        min-width: 50px;
+    }
+
+    .stats-container.compact .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stats-container.compact .stat-label {
+        font-size: 0.6rem;
+    }
+
+    /* Timer controls - ensure touch targets */
+    .timer-controls {
+        gap: var(--spacing-xs);
+    }
+
+    .timer-btn {
+        min-width: 44px;
+        min-height: 36px;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.75rem;
+    }
+
+    /* Terminal area - proper sizing */
+    .terminal-container {
+        min-height: 160px;
+        max-height: 220px;
+        padding: var(--spacing-sm);
+    }
+
+    .terminal-content {
+        font-size: 0.95rem;
+    }
+
+    #terminalArea {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Instruction overlay - ensure readability */
+    .instruction-overlay {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: var(--spacing-xs);
+    }
+
+    .instruction-text {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .instruction-keys {
+        font-size: 0.75rem;
+    }
+}
+
+/* ---- Very Small Screens (320px - iPhone SE) ---- */
+@media (max-width: 350px) {
+    .app-container {
+        padding: var(--spacing-xs);
+    }
+
+    /* Logo - compact */
+    .logo {
+        font-size: 0.95rem;
+    }
+
+    .logo-icon {
+        font-size: 1.1rem;
+    }
+
+    /* Header controls - stack if needed */
+    .header-controls {
+        gap: 4px;
+    }
+
+    /* Hide theme name on very small screens */
+    .theme-trigger .theme-icon {
+        display: none;
+    }
+
+    .theme-trigger {
+        padding: var(--spacing-sm);
+        min-width: 44px;
+    }
+
+    /* Stats - minimal */
+    .stats-container.compact .stat-value {
+        font-size: 1rem;
+    }
+
+    .stats-container.compact .stat-label {
+        font-size: 0.55rem;
+    }
+
+    /* Terminal - compact but functional */
+    .terminal-container {
+        min-height: 140px;
+        padding: var(--spacing-xs);
+    }
+
+    .terminal-content,
+    #terminalArea {
+        font-size: 0.85rem;
+    }
+
+    .instruction-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* ---- Mobile Keyboard - Educational Mode ---- */
+/*
+ * On mobile, users can't actually practice shortcuts with a physical keyboard.
+ * Transform the mobile keyboard into an educational reference tool.
+ */
+
+@media (max-width: 768px), (pointer: coarse) {
+    .mobile-keyboard {
+        /* Visual indicator this is for reference */
+        position: relative;
+    }
+
+    /* Change title to be educational */
+    .mobile-keyboard-title {
+        font-size: 0.65rem;
+        color: var(--text-secondary);
+        letter-spacing: 0.08em;
+    }
+
+    /* Style buttons as reference cards, not actionable buttons */
+    .shortcut-key {
+        cursor: default;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        opacity: 0.95;
+        min-height: 52px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--spacing-sm);
+    }
+
+    /* Subtle hover instead of active press */
+    .shortcut-key:hover {
+        background: var(--bg-secondary);
+        border-color: var(--text-muted);
+    }
+
+    /* Remove the active/pressed transformation */
+    .shortcut-key:active,
+    .shortcut-key.pressed {
+        transform: none;
+        background: var(--accent-primary);
+        opacity: 1;
+    }
+
+    /* Make key combos more readable */
+    .key-combo {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    /* Show labels clearly */
+    .key-label {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+        text-transform: lowercase;
+    }
+
+    /* Section titles more visible */
+    .mobile-keyboard-section-title {
+        font-size: 0.55rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        margin-bottom: 6px;
+        margin-top: var(--spacing-sm);
+    }
+
+    .mobile-keyboard-section:first-child .mobile-keyboard-section-title {
+        margin-top: 0;
+    }
+}
+
+/* Mobile keyboard responsive refinements */
+@media (max-width: 600px) {
+    .mobile-keyboard {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-xs);
+        margin-top: var(--spacing-sm);
+    }
+
+    .mobile-keyboard-row {
+        gap: 6px;
+    }
+
+    .shortcut-key {
+        min-width: 65px;
+        max-width: 110px;
+        min-height: 48px;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .key-combo {
+        font-size: 0.75rem;
+    }
+
+    .key-label {
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .mobile-keyboard {
+        padding: var(--spacing-xs);
+        gap: 4px;
+    }
+
+    .mobile-keyboard-row {
+        gap: 4px;
+    }
+
+    .shortcut-key {
+        min-width: 52px;
+        max-width: 85px;
+        min-height: 44px;
+        padding: 6px 4px;
+    }
+
+    .key-combo {
+        font-size: 0.65rem;
+        letter-spacing: -0.02em;
+    }
+
+    .key-label {
+        font-size: 0.5rem;
+        margin-top: 2px;
+    }
+
+    .mobile-keyboard-title {
+        font-size: 0.55rem;
+        margin-bottom: 4px;
+    }
+
+    .mobile-keyboard-section-title {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 350px) {
+    .shortcut-key {
+        min-width: 45px;
+        max-width: 75px;
+        min-height: 40px;
+        padding: 4px 2px;
+    }
+
+    .key-combo {
+        font-size: 0.6rem;
+    }
+
+    /* Hide labels on very small screens */
+    .key-label {
+        display: none;
+    }
+
+    .mobile-keyboard-row {
+        gap: 3px;
+    }
+}
+
+/* ---- Settings Dropdown Touch Improvements ---- */
+@media (max-width: 600px) {
+    /* Full-width dropdown for better usability */
+    .settings-dropdown,
+    .theme-dropdown {
+        position: fixed;
+        left: var(--spacing-sm);
+        right: var(--spacing-sm);
+        bottom: 70px;
+        top: auto;
+        max-width: none;
+        max-height: 55vh;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 -4px 20px var(--shadow);
+    }
+
+    /* Better touch targets in dropdowns */
+    .settings-dropdown .setting-item {
+        min-height: 48px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .settings-dropdown .setting-label {
+        font-size: 0.9rem;
+    }
+
+    .settings-dropdown .settings-title {
+        padding: var(--spacing-md);
+        font-size: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .settings-dropdown .settings-section-title {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.65rem;
+    }
+
+    /* Toggle slider - larger for touch */
+    .toggle-slider {
+        width: 44px;
+        height: 24px;
+    }
+
+    .toggle-slider::after {
+        width: 20px;
+        height: 20px;
+    }
+
+    .setting-toggle:checked + .toggle-slider::after {
+        transform: translateX(20px);
+    }
+
+    /* Theme options - larger touch targets */
+    .theme-option {
+        min-height: 48px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .theme-name {
+        font-size: 0.9rem;
+    }
+}
+
+/* ---- Typography Improvements for Readability ---- */
+@media (max-width: 768px) {
+    /* Ensure minimum readable font sizes */
+    body {
+        font-size: 15px;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    /* Status message - clear and readable */
+    .status-message {
+        font-size: 0.85rem;
+        padding: var(--spacing-sm);
+    }
+
+    /* Footer credit - readable but subtle */
+    .footer-credit {
+        font-size: 0.7rem;
+        padding: var(--spacing-sm);
+    }
+
+    /* Results screen - readable numbers */
+    .results-footer {
+        font-size: 0.75rem;
+    }
+
+    .result-info {
+        font-size: 0.8rem;
+    }
+
+    /* Hints warning */
+    .hints-warning {
+        font-size: 0.75rem;
+        padding: var(--spacing-sm);
+    }
+}
+
+/* ---- Overflow Prevention ---- */
+@media (max-width: 600px) {
+    /* Prevent any horizontal scrolling */
+    .app-container,
+    .header,
+    .header-controls,
+    .stats-container,
+    .terminal-container,
+    .mobile-keyboard,
+    .results-inline {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Instruction text - wrap properly */
+    .instruction-text {
+        word-break: break-word;
+        hyphens: auto;
+    }
+
+    /* Terminal text - wrap to prevent overflow */
+    .terminal-text,
+    #terminalArea {
+        word-break: break-all;
+        overflow-wrap: break-word;
+    }
+
+    /* Results hero - stack on small screens */
+    .results-hero {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* ---- Remove Janky Animations on Touch ---- */
+@media (pointer: coarse) {
+    /* Simplify transitions for smoother feel */
+    .shortcut-key {
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    /* Remove scale transforms that cause jank */
+    .timer-btn:active,
+    .os-btn:active,
+    .settings-trigger:active,
+    .theme-trigger:active {
+        transform: none;
+    }
+
+    /* Reduce animation complexity */
+    .challenge-enter {
+        animation: none;
+    }
+
+    /* Simpler feedback animations */
+    .feedback-success,
+    .feedback-error {
+        animation-duration: 0.15s;
+    }
+}
+
+/* ---- Safe Area Refinements ---- */
+@supports (padding: env(safe-area-inset-bottom)) {
+    @media (max-width: 600px) {
+        .mobile-keyboard {
+            padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+        }
+
+        .settings-dropdown,
+        .theme-dropdown {
+            bottom: calc(70px + env(safe-area-inset-bottom));
+        }
+
+        .results-inline {
+            padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom));
+        }
     }
 }
