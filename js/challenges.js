@@ -1,5 +1,5 @@
 /**
- * CommandMonkey Challenge System
+ * monkeycmd Challenge System
  * Generates keyboard shortcut challenges for terminal-like text manipulation
  * Supports macOS, Windows, and Linux keyboard shortcuts
  */
@@ -1054,6 +1054,39 @@ const CHALLENGE_GENERATORS = {
   CONTROL_BACKWARD: generateControlBackwardChallenge
 };
 
+// Command type arrays by category - exported for external use
+export const NAVIGATION_COMMANDS = [
+  'MOVE_WORD_LEFT',
+  'MOVE_WORD_RIGHT',
+  'JUMP_LINE_START',
+  'JUMP_LINE_END',
+  'CONTROL_LINE_START',
+  'CONTROL_LINE_END',
+  'CONTROL_FORWARD',
+  'CONTROL_BACKWARD'
+];
+
+export const SELECTION_COMMANDS = [
+  'SELECT_WORD_LEFT',
+  'SELECT_WORD_RIGHT',
+  'SELECT_TO_LINE_START',
+  'SELECT_TO_LINE_END',
+  'SELECT_ALL',
+  'SELECT_CHAR_LEFT',
+  'SELECT_CHAR_RIGHT'
+];
+
+export const DELETION_COMMANDS = [
+  'DELETE_WORD',
+  'DELETE_WORD_FORWARD',
+  'DELETE_TO_LINE_START',
+  'DELETE_TO_LINE_END',
+  'CONTROL_DELETE_TO_START'
+];
+
+// All commands combined
+export const ALL_COMMANDS = [...NAVIGATION_COMMANDS, ...SELECTION_COMMANDS, ...DELETION_COMMANDS];
+
 // Command categories for filtering challenges
 export const COMMAND_CATEGORIES = {
   all: {
@@ -1066,42 +1099,19 @@ export const COMMAND_CATEGORIES = {
     id: 'navigation',
     name: 'Navigation',
     description: 'Move faster through text',
-    commandTypes: [
-      'MOVE_WORD_LEFT',
-      'MOVE_WORD_RIGHT',
-      'JUMP_LINE_START',
-      'JUMP_LINE_END',
-      'CONTROL_LINE_START',
-      'CONTROL_LINE_END',
-      'CONTROL_FORWARD',
-      'CONTROL_BACKWARD'
-    ]
+    commandTypes: NAVIGATION_COMMANDS
   },
   selection: {
     id: 'selection',
     name: 'Selection',
     description: 'Select text like a pro',
-    commandTypes: [
-      'SELECT_WORD_LEFT',
-      'SELECT_WORD_RIGHT',
-      'SELECT_TO_LINE_START',
-      'SELECT_TO_LINE_END',
-      'SELECT_ALL',
-      'SELECT_CHAR_LEFT',
-      'SELECT_CHAR_RIGHT'
-    ]
+    commandTypes: SELECTION_COMMANDS
   },
   deletion: {
     id: 'deletion',
     name: 'Deletion',
     description: 'Delete with precision',
-    commandTypes: [
-      'DELETE_WORD',
-      'DELETE_WORD_FORWARD',
-      'DELETE_TO_LINE_START',
-      'DELETE_TO_LINE_END',
-      'CONTROL_DELETE_TO_START'
-    ]
+    commandTypes: DELETION_COMMANDS
   }
 };
 
@@ -1139,19 +1149,51 @@ export function getCategoryCommandTypes(categoryId) {
  * Generate a random challenge
  * @param {string} [commandType] - Optional specific command type to generate
  * @param {string} [customText] - Optional custom text to use
- * @param {string} [categoryId] - Optional category to filter commands
+ * @param {string|Object} [categoryOrEnabledCategories] - Optional category ID (string) for backwards compatibility,
+ *        or an object with enabled categories: { navigation: true, selection: true, deletion: true }
  * @param {'mac' | 'windows' | 'linux'} [os] - Optional OS to generate for (defaults to current OS)
  * @returns {Object} Challenge object
  */
-export function generateChallenge(commandType = null, customText = null, categoryId = null, os = currentOS) {
+export function generateChallenge(commandType = null, customText = null, categoryOrEnabledCategories = null, os = currentOS) {
   const text = customText || getRandomItem(TEXT_POOL);
 
-  // Get available command types based on category
+  // Get available command types based on category configuration
   let availableCommands;
   if (commandType) {
     availableCommands = [commandType];
-  } else if (categoryId) {
-    availableCommands = getCategoryCommandTypes(categoryId);
+  } else if (categoryOrEnabledCategories) {
+    // Check if it's the new format (object with enabled categories) or old format (string category ID)
+    if (typeof categoryOrEnabledCategories === 'object' && categoryOrEnabledCategories !== null) {
+      // New format: { navigation: true, selection: true, deletion: true }
+      const enabledCategories = categoryOrEnabledCategories;
+
+      // Default to all categories enabled if object is empty or all false
+      const categories = {
+        navigation: enabledCategories.navigation ?? true,
+        selection: enabledCategories.selection ?? true,
+        deletion: enabledCategories.deletion ?? true
+      };
+
+      // Build list of available commands based on enabled categories
+      availableCommands = [];
+      if (categories.navigation) {
+        availableCommands = availableCommands.concat(NAVIGATION_COMMANDS);
+      }
+      if (categories.selection) {
+        availableCommands = availableCommands.concat(SELECTION_COMMANDS);
+      }
+      if (categories.deletion) {
+        availableCommands = availableCommands.concat(DELETION_COMMANDS);
+      }
+
+      // If nothing enabled, default to all
+      if (availableCommands.length === 0) {
+        availableCommands = ALL_COMMANDS;
+      }
+    } else {
+      // Old format: string category ID (backwards compatibility)
+      availableCommands = getCategoryCommandTypes(categoryOrEnabledCategories);
+    }
   } else {
     availableCommands = Object.keys(CHALLENGE_GENERATORS);
   }
@@ -1299,6 +1341,10 @@ export function formatKeyCombination(keys) {
 export default {
   COMMANDS,
   COMMAND_CATEGORIES,
+  NAVIGATION_COMMANDS,
+  SELECTION_COMMANDS,
+  DELETION_COMMANDS,
+  ALL_COMMANDS,
   TEXT_POOL,
   generateChallenge,
   generateChallenges,

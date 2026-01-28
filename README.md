@@ -1,4 +1,4 @@
-# CommandMonkey
+# monkeycmd
 
 A MonkeyType-inspired keyboard shortcut trainer. Practice macOS keyboard shortcuts for text navigation, selection, and deletion. Get faster at terminal commands and text editing with gamified practice sessions.
 
@@ -47,11 +47,11 @@ A MonkeyType-inspired keyboard shortcut trainer. Practice macOS keyboard shortcu
 1. Create a GitHub repository
 2. Push the project:
    ```bash
-   cd CommandMonkey
+   cd monkeycmd
    git init
    git add .
    git commit -m "Initial commit"
-   git remote add origin https://github.com/YOUR_USERNAME/CommandMonkey.git
+   git remote add origin https://github.com/YOUR_USERNAME/monkeycmd.git
    git push -u origin main
    ```
 3. Go to [vercel.com](https://vercel.com) and import the repository
@@ -60,7 +60,7 @@ A MonkeyType-inspired keyboard shortcut trainer. Practice macOS keyboard shortcu
 ## Project Structure
 
 ```
-CommandMonkey/
+monkeycmd/
 ├── index.html          # Main HTML file
 ├── css/
 │   └── styles.css      # All styles with theme support
@@ -93,4 +93,4 @@ CommandMonkey/
 ## License
 
 MIT
-# CommandMonkey
+# monkeycmd

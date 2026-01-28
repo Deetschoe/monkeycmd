@@ -4,6 +4,15 @@
  * Supports macOS, Windows, and Linux keyboard shortcuts
  */
 
+// HTML escape map - defined once at module level for performance
+const HTML_ESCAPE_MAP = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+};
+
 /**
  * Detect the current operating system
  * @returns {'mac' | 'windows' | 'linux'} The detected OS
@@ -32,9 +41,19 @@ export class TerminalEditor {
         this.cursorPosition = 0;
         this.selection = null; // { start: number, end: number } or null
         this.os = detectOS(); // Detect OS for proper shortcut handling
+        this.onEnterCallback = null; // Optional callback for Enter key (easter egg commands)
 
         this._setupDOM();
         this._setupEventListeners();
+    }
+
+    /**
+     * Set a callback for when Enter is pressed
+     * Used for easter egg terminal commands
+     * @param {Function|null} callback - Function to call on Enter, receives current text. Return true to prevent newline insertion.
+     */
+    setEnterCallback(callback) {
+        this.onEnterCallback = callback;
     }
 
     /**
@@ -217,13 +236,24 @@ export class TerminalEditor {
                 this.moveToLineEnd();
             }
             handled = true;
-        } else if (key.length === 1 && !metaKey && !ctrlKey) {
-            // Regular character input
-            this._insertCharacter(key);
+        } else if (key.length === 1 && !metaKey && !ctrlKey && !altKey) {
+            // Regular character input (only shift allowed for uppercase)
+            this.insertChar(key);
             handled = true;
         } else if (key === 'Enter') {
-            this._insertCharacter('\n');
-            handled = true;
+            // Check if there's a callback for Enter (easter egg commands)
+            if (this.onEnterCallback) {
+                const preventNewline = this.onEnterCallback(this.text);
+                if (preventNewline) {
+                    handled = true;
+                } else {
+                    this._insertCharacter('\n');
+                    handled = true;
+                }
+            } else {
+                this._insertCharacter('\n');
+                handled = true;
+            }
         } else if (ctrlKey && key.toLowerCase() === 'a') {
             if (isMac || isLinux) {
                 // Mac/Linux: Control + A: Move to line start (terminal/Emacs style)
@@ -314,6 +344,17 @@ export class TerminalEditor {
     moveCursor(position) {
         this.cursorPosition = Math.max(0, Math.min(position, this.text.length));
         this.selection = null;
+        this.render();
+    }
+
+    /**
+     * Insert a character at cursor position (public method)
+     * @param {string} char - The character to insert
+     */
+    insertChar(char) {
+        // Insert character at cursor position
+        this.text = this.text.slice(0, this.cursorPosition) + char + this.text.slice(this.cursorPosition);
+        this.cursorPosition++;
         this.render();
     }
 
@@ -809,16 +850,10 @@ export class TerminalEditor {
 
     /**
      * Escape HTML special characters
+     * Uses module-level constant for better performance (no object allocation per call)
      */
     _escapeHtml(text) {
-        const escapeMap = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        };
-        return text.replace(/[&<>"']/g, char => escapeMap[char]);
+        return text.replace(/[&<>"']/g, char => HTML_ESCAPE_MAP[char]);
     }
 }
 
@@ -871,7 +906,7 @@ export function injectTerminalStyles() {
         }
 
         .terminal-editor .selection {
-            background-color: #264f78;
+            background-color: rgba(38, 79, 120, 0.7);
             color: #ffffff;
         }
 

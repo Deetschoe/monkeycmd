@@ -1,5 +1,5 @@
 /**
- * CommandMonkey Game Engine
+ * monkeycmd Game Engine
  * A typing practice game for keyboard shortcuts
  */
 
@@ -83,7 +83,7 @@ class EventEmitter {
 }
 
 /**
- * Main Game class for CommandMonkey
+ * Main Game class for monkeycmd
  */
 class Game extends EventEmitter {
   /**

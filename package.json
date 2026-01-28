@@ -1,5 +1,5 @@
 {
-  "name": "commandmonkey",
+  "name": "monkeycmd",
   "version": "1.0.0",
   "description": "A MonkeyType-inspired website for practicing keyboard shortcuts and commands. Measures Commands Per Minute (CPM) with timer modes.",
   "author": "",

@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CommandMonkey - Master keyboard shortcuts with a MonkeyType-inspired typing trainer. Practice cursor navigation, word deletion, and text selection shortcuts.">
+    <meta name="description" content="monkeycmd - Master keyboard shortcuts with a MonkeyType-inspired typing trainer. Practice cursor navigation, word deletion, and text selection shortcuts.">
     <meta name="theme-color" content="#323437">
-    <title>CommandMonkey - Keyboard Shortcut Trainer</title>
+    <title>monkeycmd - Keyboard Shortcut Trainer</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        /* Critical blur - loads before external CSS */
+        .hints-hidden {
+            filter: blur(10px) !important;
+            opacity: 0.15 !important;
+            pointer-events: none !important;
+        }
+    </style>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="preload" data-hints="off">
     <div class="app-container">
         <!-- Header -->
         <header class="header">
-            <div class="logo">
+            <div class="logo" id="logoBtn" role="button" tabindex="0" aria-label="Reset game">
                 <span class="logo-icon">&gt;_</span>
-                <span class="logo-text">CommandMonkey</span>
+                <span class="logo-text">monkeycmd</span>
             </div>
             <div class="header-controls">
                 <div class="os-selector" role="radiogroup" aria-label="Select operating system">
@@ -167,6 +175,40 @@
                         </button>
                     </div>
                 </div>
+                <div class="settings-wrapper">
+                    <button class="settings-trigger" id="settingsTrigger" aria-label="Settings" data-tooltip="Settings">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                        </svg>
+                    </button>
+                    <div class="settings-dropdown" id="settingsDropdown">
+                        <div class="settings-title">Settings</div>
+                        <label class="setting-item">
+                            <span class="setting-label">Show hints</span>
+                            <input type="checkbox" id="settingHints" class="setting-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="settings-section">
+                            <div class="settings-section-title">command types</div>
+                            <label class="setting-item">
+                                <span class="setting-label">navigation</span>
+                                <input type="checkbox" id="settingNavigation" class="setting-toggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label class="setting-item">
+                                <span class="setting-label">selection</span>
+                                <input type="checkbox" id="settingSelection" class="setting-toggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label class="setting-item">
+                                <span class="setting-label">deletion</span>
+                                <input type="checkbox" id="settingDeletion" class="setting-toggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -179,7 +221,7 @@
                     <span class="stat-label">CPM</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value" id="accuracyDisplay">100%</span>
+                    <span class="stat-value" id="accuracyDisplay">-</span>
                     <span class="stat-label">Accuracy</span>
                 </div>
                 <div class="stat-item">
@@ -198,22 +240,6 @@
                 </div>
             </div>
 
-            <!-- Category Selector -->
-            <div class="category-controls" id="categoryControls">
-                <button class="category-btn active" data-category="all" data-tooltip="Practice all keyboard shortcuts">
-                    <span class="category-name">All Commands</span>
-                </button>
-                <button class="category-btn" data-category="navigation" data-tooltip="Move faster through text">
-                    <span class="category-name">Navigation</span>
-                </button>
-                <button class="category-btn" data-category="selection" data-tooltip="Select text like a pro">
-                    <span class="category-name">Selection</span>
-                </button>
-                <button class="category-btn" data-category="deletion" data-tooltip="Delete with precision">
-                    <span class="category-name">Deletion</span>
-                </button>
-            </div>
-
             <!-- Terminal Container (Main Focus) -->
             <div class="terminal-container" id="terminalContainer">
                 <div class="terminal-focus-glow"></div>
@@ -227,7 +253,12 @@
                 <div class="instruction-overlay" id="instructionOverlay">
                     <span class="instruction-text" id="commandInstruction">Delete the word 'hello'</span>
                     <span class="instruction-arrow">→</span>
-                    <span class="instruction-keys blurred" id="keyHint" tabindex="0" role="button" aria-label="Click to reveal shortcut">Option + Delete</span>
+                    <span
+                        class="instruction-keys hints-hidden"
+                        id="keyHint"
+                        style="filter: blur(10px) !important; opacity: 0.15 !important; pointer-events: none;"
+                        aria-hidden="true"
+                    >...</span>
                 </div>
                 <div class="terminal-content">
                     <div class="terminal-line">
@@ -248,56 +279,118 @@
                 Press any shortcut to start
             </div>
 
-            <!-- Inline Results Screen (MonkeyType-style) -->
-            <div class="results-screen" id="resultsScreen" hidden>
-                <div class="results-main">
-                    <div class="results-left">
-                        <div class="result-big">
-                            <span class="result-label">cpm</span>
-                            <span class="result-value" id="resultCpmInline">0</span>
-                        </div>
-                        <div class="result-big">
-                            <span class="result-label">acc</span>
-                            <span class="result-value" id="resultAccInline">100%</span>
-                        </div>
+            <!-- Mobile Shortcut Keyboard -->
+            <div class="mobile-keyboard" id="mobileKeyboard">
+                <div class="mobile-keyboard-title">tap to execute shortcut</div>
+
+                <!-- Navigation Section -->
+                <div class="mobile-keyboard-section" data-section="navigation">
+                    <div class="mobile-keyboard-section-title">navigation</div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="navigation" data-command="MOVE_WORD_LEFT">
+                            <span class="key-combo">Opt+Left</span>
+                            <span class="key-label">word left</span>
+                        </button>
+                        <button class="shortcut-key" data-category="navigation" data-command="MOVE_WORD_RIGHT">
+                            <span class="key-combo">Opt+Right</span>
+                            <span class="key-label">word right</span>
+                        </button>
                     </div>
-                    <div class="results-right">
-                        <div class="results-stats">
-                            <div class="stat-group">
-                                <span class="stat-label">test type</span>
-                                <span class="stat-value" id="resultTestType">time 30<br>all commands</span>
-                            </div>
-                            <div class="stat-group">
-                                <span class="stat-label">raw</span>
-                                <span class="stat-value" id="resultRaw">0</span>
-                            </div>
-                            <div class="stat-group">
-                                <span class="stat-label">commands</span>
-                                <span class="stat-value" id="resultCommandsInline">0/0</span>
-                            </div>
-                            <div class="stat-group">
-                                <span class="stat-label">time</span>
-                                <span class="stat-value" id="resultTimeInline">30s</span>
-                            </div>
-                        </div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="navigation" data-command="JUMP_LINE_START">
+                            <span class="key-combo">Cmd+Left</span>
+                            <span class="key-label">line start</span>
+                        </button>
+                        <button class="shortcut-key" data-category="navigation" data-command="JUMP_LINE_END">
+                            <span class="key-combo">Cmd+Right</span>
+                            <span class="key-label">line end</span>
+                        </button>
                     </div>
                 </div>
+
+                <!-- Selection Section -->
+                <div class="mobile-keyboard-section" data-section="selection">
+                    <div class="mobile-keyboard-section-title">selection</div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="selection" data-command="SELECT_WORD_LEFT">
+                            <span class="key-combo">Opt+Shift+Left</span>
+                            <span class="key-label">select word left</span>
+                        </button>
+                        <button class="shortcut-key" data-category="selection" data-command="SELECT_WORD_RIGHT">
+                            <span class="key-combo">Opt+Shift+Right</span>
+                            <span class="key-label">select word right</span>
+                        </button>
+                    </div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="selection" data-command="SELECT_TO_LINE_START">
+                            <span class="key-combo">Cmd+Shift+Left</span>
+                            <span class="key-label">select to start</span>
+                        </button>
+                        <button class="shortcut-key" data-category="selection" data-command="SELECT_TO_LINE_END">
+                            <span class="key-combo">Cmd+Shift+Right</span>
+                            <span class="key-label">select to end</span>
+                        </button>
+                    </div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="selection" data-command="SELECT_ALL">
+                            <span class="key-combo">Cmd+A</span>
+                            <span class="key-label">select all</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Deletion Section -->
+                <div class="mobile-keyboard-section" data-section="deletion">
+                    <div class="mobile-keyboard-section-title">deletion</div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="deletion" data-command="DELETE_WORD">
+                            <span class="key-combo">Opt+Delete</span>
+                            <span class="key-label">delete word</span>
+                        </button>
+                        <button class="shortcut-key" data-category="deletion" data-command="DELETE_WORD_FORWARD">
+                            <span class="key-combo">Fn+Opt+Delete</span>
+                            <span class="key-label">delete word fwd</span>
+                        </button>
+                    </div>
+                    <div class="mobile-keyboard-row">
+                        <button class="shortcut-key" data-category="deletion" data-command="DELETE_TO_LINE_START">
+                            <span class="key-combo">Cmd+Delete</span>
+                            <span class="key-label">delete to start</span>
+                        </button>
+                        <button class="shortcut-key" data-category="deletion" data-command="DELETE_TO_LINE_END">
+                            <span class="key-combo">Ctrl+K</span>
+                            <span class="key-label">delete to end</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inline Results Screen (MonkeyType-style) -->
+            <div class="results-inline" id="resultsInline" hidden>
+                <div class="results-hero">
+                    <div class="result-main">
+                        <span class="result-label">cpm</span>
+                        <span class="result-number" id="resultCpmMain">0</span>
+                    </div>
+                    <div class="result-main">
+                        <span class="result-label">acc</span>
+                        <span class="result-number" id="resultAccMain">100%</span>
+                    </div>
+                    <div class="result-main">
+                        <span class="result-label">time</span>
+                        <span class="result-number" id="resultTimeMain">30s</span>
+                    </div>
+                </div>
+                <div class="results-chart-container" id="resultsChart"></div>
                 <div class="results-pb" id="resultsPb" hidden>
                     <span class="pb-text">new personal best!</span>
                 </div>
-                <div class="results-actions">
-                    <button class="action-btn" id="nextTestBtn" aria-label="Next test" title="Next test">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
-                            <line x1="19" y1="5" x2="19" y2="19"></line>
-                        </svg>
-                    </button>
-                    <button class="action-btn" id="replayBtnInline" aria-label="Restart test" title="Restart test">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                            <path d="M3 3v5h5"></path>
-                        </svg>
-                    </button>
+                <div class="hints-warning" id="hintsWarning" hidden>
+                    <span class="warning-icon">⚠️</span>
+                    <span class="warning-text">hints enabled - score not counted</span>
+                </div>
+                <div class="results-footer">
+                    <span class="result-info" id="resultInfo">30s - all commands</span>
                 </div>
             </div>
         </main>
@@ -317,49 +410,10 @@
                     <span class="shortcut-label">reset</span>
                 </div>
             </div>
+            <div class="footer-credit">
+                made with love by <a href="https://x.com/deetschoening" target="_blank" rel="noopener noreferrer" class="credit-link">deet</a>
+            </div>
         </footer>
-    </div>
-
-    <!-- Results Modal -->
-    <div class="modal-overlay" id="resultsModal" hidden>
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Results</h2>
-                <button class="modal-close" id="modalClose" aria-label="Close results">&times;</button>
-            </div>
-            <div class="results-grid">
-                <div class="result-item featured">
-                    <span class="result-value" id="resultCpm">0</span>
-                    <span class="result-label">Commands Per Minute</span>
-                    <div class="personal-best-indicator" id="personalBestIndicator">
-                        <span class="pb-badge">NEW PERSONAL BEST!</span>
-                    </div>
-                </div>
-                <div class="result-item">
-                    <span class="result-value" id="resultAccuracy">100%</span>
-                    <span class="result-label">Accuracy</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-value" id="resultCommands">0</span>
-                    <span class="result-label">Commands</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-value text-success" id="resultCorrect">0</span>
-                    <span class="result-label">Correct</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-value text-error" id="resultWrong">0</span>
-                    <span class="result-label">Wrong</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-value" id="resultTime">30s</span>
-                    <span class="result-label">Duration</span>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-primary" id="restartBtn">Try Again</button>
-            </div>
-        </div>
     </div>
 
     <!-- Scripts -->
